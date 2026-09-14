@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A-to-Z Web Insight — Evidence-based website audits</title>
+  <meta name="description" content="Paste a URL. Get a measured, evidence-backed audit of performance, SEO, and security — with a prioritized fix list." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <div class="brand">
+        <span class="brand__mark">A→Z</span>
+        <span class="brand__name">Web Insight</span>
+      </div>
+      <span class="brand__tag">measured, not guessed</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero wrap">
+      <h1 class="hero__title">Every finding traces back to evidence.</h1>
+      <p class="hero__subtitle">
+        Enter a URL. We fetch it, measure it, and show you exactly what we found —
+        no invented scores, no black-box AI guesses about your site.
+      </p>
+
+      <form id="scan-form" class="scan-form" autocomplete="off">
+        <label for="url-input" class="sr-only">Website URL</label>
+        <input
+          id="url-input"
+          name="url"
+          type="text"
+          inputmode="url"
+          placeholder="https://example.com"
+          required
+        />
+        <button type="submit" id="scan-button">
+          <span class="btn-label">Scan</span>
+        </button>
+      </form>
+      <p id="form-error" class="form-error" role="alert" hidden></p>
+      <p class="hero__hint">Try the local demo targets: <code>http://localhost:4100/messy</code> or <code>http://localhost:4100/clean</code></p>
+    </section>
+
+    <section id="loading" class="loading wrap" hidden>
+      <div class="loading__bar"><div class="loading__fill"></div></div>
+      <p id="loading-text">SCAN → MEASURE → NORMALIZE → ANALYZE → PRIORITIZE</p>
+    </section>
+
+    <section id="report" class="report wrap" hidden>
+
+      <div class="report__header">
+        <div>
+          <p class="eyebrow">Report for</p>
+          <h2 id="report-url" class="report__url"></h2>
+          <p id="report-meta" class="report__meta"></p>
+        </div>
+        <div class="score-hero">
+          <div class="score-hero__ring" id="overall-ring">
+            <span id="overall-score">–</span>
+          </div>
+          <span class="score-hero__label">Overall health</span>
+        </div>
+      </div>
+
+      <div class="category-grid" id="category-grid"></div>
+
+      <div class="panel launch-banner" id="launch-banner">
+        <div class="launch-banner__head">
+          <span class="launch-banner__status" id="launch-status"></span>
+          <p class="launch-banner__summary" id="launch-summary"></p>
+        </div>
+        <div id="launch-blockers"></div>
+        <div id="launch-why"></div>
+        <p class="launch-banner__note">Based on the checks performed this scan — not a certification.</p>
+      </div>
+
+      <div class="panel" id="verification-panel" hidden>
+        <div class="panel__head">
+          <h3>What was verified</h3>
+          <p>Honest disclosure of scan coverage — never treated as "no problem" when something wasn't checked.</p>
+        </div>
+        <div id="verification-body"></div>
+      </div>
+
+      <div class="panel technology-panel" id="technology-panel" hidden>
+        <div class="panel__head">
+          <h3>Technology Stack</h3>
+          <p>Technologies identified from observed HTML, resources, headers, cookies, and runtime network evidence.</p>
+        </div>
+        <div id="technology-body"></div>
+      </div>
+
+      <div class="panel" id="correlated-panel" hidden>
+        <div class="panel__head">
+          <h3>Root-cause correlations</h3>
+          <p>Findings from different categories that trace back to the same underlying resource.</p>
+        </div>
+        <div id="correlated-body"></div>
+      </div>
+
+      <div class="coming-soon" id="coming-soon-row"></div>
+
+      <div class="panel" id="cwv-panel">
+        <div class="panel__head">
+          <h3>Core Web Vitals</h3>
+          <p id="cwv-subhead">Field/lab data from Google PageSpeed Insights.</p>
+        </div>
+        <div id="cwv-body"></div>
+      </div>
+
+      <div class="panel" id="cwv-mobile-desktop-panel" hidden>
+        <div class="panel__head">
+          <h3>Mobile vs Desktop</h3>
+          <p>Only shown when a desktop comparison was requested for this scan.</p>
+        </div>
+        <div id="cwv-mobile-desktop-body"></div>
+      </div>
+
+      <div class="panel" id="prioritized-fixes-panel" hidden>
+        <div class="panel__head">
+          <h3>Launch-readiness fix order</h3>
+          <p>Ranked by blocking status, affected scope, and cross-category impact — not severity alone.</p>
+        </div>
+        <ol class="priority-list" id="prioritized-fixes-list"></ol>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
+          <h3>Fix these first</h3>
+          <p>Ranked by severity — the smallest list that moves the score most.</p>
+        </div>
+        <ol class="priority-list" id="priority-list"></ol>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head panel__head--row">
+          <div>
+            <h3>All findings</h3>
+            <p id="findings-count"></p>
+          </div>
+          <div class="filter-tabs" id="filter-tabs"></div>
+        </div>
+        <div class="issue-list" id="issue-list"></div>
+      </div>
+
+      <div class="panel" id="a11y-coverage-panel">
+        <div class="panel__head">
+          <h3>Accessibility scan coverage</h3>
+          <p>Static HTML analysis has real limits — here's exactly what was and wasn't checked.</p>
+        </div>
+        <div id="a11y-coverage-body"></div>
+      </div>
+
+      <div class="panel evidence-log">
+        <div class="panel__head">
+          <h3>Raw evidence log</h3>
+          <p>The measured facts every finding above was derived from.</p>
+        </div>
+        <pre id="evidence-log"></pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer wrap">
+    <p>A-to-Z Web Insight — MVP. Performance, SEO &amp; Security are live. Accessibility, Content, UX, Business and Competitor Intelligence are on the roadmap.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
